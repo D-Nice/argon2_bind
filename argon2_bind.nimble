@@ -1,0 +1,66 @@
+# Package
+version       = "1.0.0"
+author        = "D-Nice"
+description   = "Bindings for the reference Argon2 C lib"
+license       = "Apache-2.0"
+srcDir        = "src"
+
+# Dependencies
+requires "nim >= 1.0.0"
+
+# Nimscript Tasks
+import sugar, sequtils, strutils
+
+func srcPaths: seq[string] =
+  const dirs =
+    @[
+      "src/"
+    ]
+  for dir in dirs:
+    result.add(dir.listFiles.filter(x => x[dir.len .. x.high].endsWith(".nim")))
+
+func testPaths: seq[string] =
+  const dir = "tests/"
+  return dir.listFiles.filter(x => x[dir.len .. x.high].startsWith('t'))
+
+## checks
+const checkCmd = "nim c -cf -w:on --hints:on -o:/dev/null --styleCheck:"
+task check_src, "Compile src with all checks on":
+  for src in srcPaths():
+    exec checkCmd & "error " & src
+task check_tests, "Compile tests with all checks on":
+  for test in testPaths():
+    exec checkCmd & "hint " & test
+task check_all, "Compile check everything and run tests":
+  exec "nimble check_src; nimble check_tests; nimble test -c"
+
+## fuzzing (for alpine nim image)
+task fuzz_fast, "Runs afl on getOutput":
+  exec "export AFL_HARDEN=1; nim c --dynlibOverride:libargon2 -L:/usr/lib/libargon2.a -f -o:/tmp/nim/argon2_full/fuzz_fast tests/fuzzer/fast.nim && afl-fuzz -i tests/fuzzer/in-fuzz -o tests/fuzzer/out-fuzz_fast /tmp/nim/argon2_full/fuzz_fast"
+task fuzz_fast_more, "Runs afl on getOutput":
+  exec "export AFL_HARDEN=1; nim c --dynlibOverride:libargon2 -L:/usr/lib/libargon2.a -f -o:/tmp/nim/argon2_full/fuzz_fast_more tests/fuzzer/fast_more.nim && afl-fuzz -i tests/fuzzer/in-fuzz -o tests/fuzzer/out-fuzz_fast_more /tmp/nim/argon2_full/fuzz_fast_more"
+task fuzz_slow, "Runs afl on getOutput":
+  exec "export AFL_HARDEN=1; nim c --dynlibOverride:libargon2 -L:/usr/lib/libargon2.a -f -o:/tmp/nim/argon2_full/fuzz_slow tests/fuzzer/slow.nim && afl-fuzz -i tests/fuzzer/in-fuzz -o tests/fuzzer/out-fuzz_slow /tmp/nim/argon2_full/fuzz_slow"
+task fuzz_slow_more, "Runs afl on getOutput":
+  exec "export AFL_HARDEN=1; nim c --dynlibOverride:libargon2 -L:/usr/lib/libargon2.a -f -o:/tmp/nim/argon2_full/fuzz_slow_more tests/fuzzer/slow_more.nim && afl-fuzz -i tests/fuzzer/in-fuzz -o tests/fuzzer/out-fuzz_slow_more /tmp/nim/argon2_full/fuzz_slow_more"
+#
+# TO STATICALLY LINK on alpine image with libs and dev of argon2 downloaded:
+# nim c -d:release -d:danger --opt:size --dynlibOverride:libargon2 -L:/usr/lib/libargon2.a argon2_full.nim
+task install_deps, "Installs dependencies for supported systems":
+  when defined(Linux):
+    const distro = staticExec("cat /etc/os-release | grep ^ID_LIKE= || cat /etc/os-release | grep ^ID=")
+    case distro.split('=', 1)[1]:
+      of "alpine":
+        exec "apk add --no-cache argon2-dev"
+        when defined(fuzz):
+          exec "apk add --no-cache afl"
+      of "debian":
+        exec "apt install -y libargon2-dev"
+        when defined(fuzz):
+          exec "apt install -y afl || echo AFL unavailable: fuzzing tasks unusuable"
+      else:
+        echo "Unknown Linux distro... install libargon2-dev or the appropriate argon2 development files for your distro manually!"
+
+task i, "Installs dependencies for some systems":
+  exec "nimble install_deps"
+

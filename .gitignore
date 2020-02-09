@@ -13,3 +13,6 @@ tests/fuzzer/out*
 
 # include fuzzer input
 !*/fuzzer/in*/*
+
+# ignore docs output
+public/*

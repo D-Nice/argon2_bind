@@ -281,9 +281,9 @@ func getEncodedLen*(
   argon2Params: Argon2Params,
   salt: seq[byte] | string,
 ): uint32 =
-  ## Requires a salt parameter in as either byte sequence or string.
-  ##
   ## Requires parameterized argon2 object.
+  ##
+  ## Requires a salt parameter in as either byte sequence or string.
   ##
   ## Returns the expected encoded output length, depending on input parameters.
   ##
@@ -540,7 +540,8 @@ func isVerified*(
   pass: seq[byte] | string,
 ): bool =
   ## Requires the encoded hash output as a string from either
-  ## `getEncodedHash <#getEncodedHash>`_ or `getOutput <#getOutput>`_.
+  ## `getEncodedHash <#getEncodedHash,,,Argon2Params>`_ or
+  ## `getOutput <#getOutput,,,Argon2Params>`_.
   ## Requires password of type byte sequence or string. Must be at least 1
   ## byte.
   ##

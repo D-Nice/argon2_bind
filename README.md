@@ -41,3 +41,5 @@ With `myproject.nim` referring to your own project importing this library,
 and you having to provide your own path to `libargon2.a` via the `-L` flag
 
 Tested on Linux only.
+
+You will need at least 1 GiB of free memory to run the tests.

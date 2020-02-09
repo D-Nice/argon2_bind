@@ -1,8 +1,6 @@
-# TODO check ram on device and skip too high RAM 
 import argon2_bind
 
 # sourced from https://github.com/P-H-C/phc-winner-argon2/blob/master/src/test.c
-
 const OUT_LEN = 32
 
 type TestParams* = object

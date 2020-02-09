@@ -1,0 +1,21 @@
+name: tester
+on:
+  - push
+  - pull_request
+jobs:
+  nim:
+    strategy:
+      matrix:
+        img:
+          - latest-alpine
+          - 1.0.6-alpine
+      fail-fast: false
+    name: test@${{ matrix.img }}
+    runs-on: ubuntu-latest
+    container:
+      image: nimlang/nim:${{ matrix.img }}
+    steps:
+    - uses: actions/checkout@v1
+    - run: |
+        nimble test -c | tee /tmp/test.out
+        cat /tmp/test.out | tail -n1 | grep 'Success: All tests passed' > /dev/null

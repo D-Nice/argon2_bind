@@ -4,8 +4,8 @@
 !*/
 
 # windows
-*.exe 
-*.ilk 
+*.exe
+*.ilk
 *.pdb
 
 # ignore fuzzer output

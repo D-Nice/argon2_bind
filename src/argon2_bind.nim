@@ -283,7 +283,7 @@ func getEncodedLen*(
 ): uint32 =
   ## Requires parameterized argon2 object.
   ##
-  ## Requires a salt parameter in as either byte sequence or string.
+  ## Requires a salt parameter as either a byte sequence or string.
   ##
   ## Returns the expected encoded output length, depending on input parameters.
   ##

@@ -53,12 +53,12 @@ suite "test for consistency between procs and multiple calls":
       fixtures[i].input.salt[j] = rng.next.byte
     
     let mcost = rng.rand(MCOST_MIN .. MCOST_MAX).uint32
-    let thrd_max = mcost.int div 8
+    let thrdMax = mcost.int div 8
 
     fixtures[i].input.params = Argon2Params(
       timeCost: rng.rand(TCOST_MIN .. TCOST_MAX).uint32,
       memoryCostK: mcost,
-      parallelism: rng.rand(THRD_MIN .. thrd_max).uint32,
+      parallelism: rng.rand(THRD_MIN .. thrdMax).uint32,
       hashLen: rng.rand(HLEN_MIN .. HLEN_MAX).uint32,
       algoType: rng.rand(ALGO_MAX).Argon2Type,
       version: rng.sample([Argon2Version10, Argon2Version13]),

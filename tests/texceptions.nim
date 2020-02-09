@@ -1,8 +1,7 @@
 import
   argon2_bind,
   ./fixtures/exceptions,
-  unittest,
-  strutils
+  unittest
 
 # attempts to cover as many errors as possible from
 # https://github.com/P-H-C/phc-winner-argon2/blob/master/include/argon2.h#L100

@@ -184,6 +184,25 @@ func setupArgon2Params*(
   ## See also:
   ## * `Argon2DefaultParams <#Argon2DefaultParams>`_
   ## * `Argon2Params <#Argon2Params>`_
+  runnableExamples:
+    # no args yields full fallback
+    let firstParams = setupArgon2Params()
+    doAssert firstParams == Argon2DefaultParams
+    # partial arg yields fallback on ones not provided
+    let secondParams = setupArgon2Params(
+      hashLen = 4,
+      memoryCostK = 1 shl 9,
+    )
+    doAssert secondParams == Argon2Params(
+      timeCost: 3,
+      memoryCostK: 1 shl 9,
+      parallelism: 1,
+      hashLen: 4,
+      algoType: Argon2i,
+      version: Argon2CurrentVersion,
+    )
+  # runnableExamples end
+
   result = Argon2Params(
     timeCost: timeCost,
     memoryCostK: memoryCostK,
@@ -405,6 +424,16 @@ func getOutput*(
   ## See also:
   ## * `getRawHash <#getRawHash,,,Argon2Params>`_
   ## * `getEncodedHash <#getEncodedHash,,,Argon2Params>`_
+  runnableExamples:
+    let
+      params = setupArgon2Params(hashLen = 4)
+      salt = "somesalt"
+      pass = "abc"
+    let res = pass.getOutput(salt, params)
+    doAssert res.hash == @[27.byte, 96, 149, 111]
+    doAssert res.encoded == "$argon2i$v=19$m=4096,t=3,p=1$c29tZXNhbHQ$G2CVbw"
+  # runnableExamples end
+
   localCastToSeqByte pass, salt
 
   var hash: seq[byte]
@@ -438,6 +467,15 @@ func getRawHash*(
   ## See also:
   ## * `getOutput <#getOutput,,,Argon2Params>`_
   ## * `getEncodedHash <#getEncodedHash,,,Argon2Params>`_
+  runnableExamples:
+    let
+      params = setupArgon2Params(hashLen = 4)
+      salt = "somesalt"
+      pass = "abc"
+    let res = pass.getRawHash(salt, params)
+    doAssert res == @[27.byte, 96, 149, 111]
+  # runnableExamples end
+
   localCastToSeqByte pass, salt
 
   var hash: seq[byte]
@@ -469,6 +507,19 @@ func getEncodedHash*(
   ## See also:
   ## * `getOutput <#getOutput,,,Argon2Params>`_
   ## * `getRawHash <#getRawHash,,,Argon2Params>`_
+  runnableExamples:
+    var expected = "$argon2i$v=19$m=4096,t=3,p=1$c29tZXNhbHQ"
+    expected &= "$vi0N5Av/NnxgttHDWyVte+OheXu6wuyyFSWJsNEhCCI"
+    let
+      salt = "somesalt"
+      pass = "abc"
+    let res = pass.getEncodedHash(salt)
+    doAssert res == expected
+    let params = setupArgon2Params(hashLen = 4)
+    let res2 = pass.getEncodedHash(salt, params)
+    doAssert res2 == "$argon2i$v=19$m=4096,t=3,p=1$c29tZXNhbHQ$G2CVbw"
+  # runnableExamples end
+
   localCastToSeqByte pass, salt
   var encoded: string
   encoded.setupEncoded(argon2Params, lsalt)
@@ -496,6 +547,20 @@ func isVerified*(
   ## Returns a bool, with true indicating success.
   ##
   ## Raises an `Argon2Error <#Argon2Error>`_ on internal exception.
+  runnableExamples:
+    let pass = "pass"
+    let encodedHash = getEncodedHash(pass, "somesalt")
+    doAssert encodedHash.isVerified(pass) == true
+    doAssert encodedHash.isVerified("wrongpass") == false
+    try:
+      discard encodedHash[0 .. ^2].isVerified(pass)
+      doAssert false
+    except Argon2Error:
+      doAssert true
+    except:
+      doAssert false
+  # runnableExamples end
+
   var lpass = cast[seq[byte]](pass)
   lpass.ensureAboveMinLen
 

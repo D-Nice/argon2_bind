@@ -46,10 +46,10 @@
 ##  # @[163, 22, 29, 233, 157, 14, 124, 7, 98, 54, 75, 44, 75, 62, 162, 185,
 ##  # 80, 0, 89, 115, 248, 135, 157, 84, 40, 127, 216, 189, 86, 146, 31, 54]
 ##
-when defined(Linux):
-  const libargon2 = "libargon2.so(|.1)"
-elif defined(Windows):
+when defined(Windows):
   const libargon2 = "libargon2.dll"
+else:
+  const libargon2 = "libargon2.so(|.1)"
 
 # EXPORTED TYPES
 

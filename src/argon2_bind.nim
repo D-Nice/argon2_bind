@@ -155,7 +155,7 @@ const Argon2DefaultParams* = Argon2Params(
   parallelism: 1,
   hashLen: 32,
   algoType: Argon2i,
-  version: Argon2CurrentVersion
+  version: Argon2CurrentVersion,
 )
   ## The default parameters to be utilized by the module. Utilized as a
   ## fallback in linked functions below.
@@ -247,7 +247,7 @@ proc argon2_hash(
   inline
 .}
 
-converter toCtrDataPtr[T: string|seq|openarray](x: var T): ptr =
+converter toCtrDataPtr[T: string|seq|openArray](x: var T): ptr =
   ## Expects a native container data type, and returns a ptr to the address
   ## of where its data should be allocated.
   ##

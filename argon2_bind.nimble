@@ -24,7 +24,10 @@ func srcPaths: seq[string] =
 
 func testPaths: seq[string] =
   const dir = "tests/"
-  return dir.listFiles.filter(x => x[dir.len .. x.high].startsWith('t'))
+  return dir.listFiles.filter(x =>
+    x[dir.len .. x.high].startsWith('t') and
+    x.endsWith(".nim")
+  )
 
 ## docs
 task docs, "Deploy doc html + search index to public/ directory":
@@ -44,13 +47,13 @@ task docs, "Deploy doc html + search index to public/ directory":
       exec "curl -LO " & docHackJsSource
 
 ## checks
-const checkCmd = "nim c -cf -w:on --hints:on -o:/dev/null --styleCheck:"
+const checkCmd = "nim c -cf -w:on --hints:off -o:/dev/null --styleCheck:"
 task check_src, "Compile src with all checks on":
   for src in srcPaths():
     exec checkCmd & "error " & src
 task check_tests, "Compile tests with all checks on":
   for test in testPaths():
-    exec checkCmd & "hint " & test
+    exec checkCmd & "error " & test
 task check_all, "Compile check everything and run tests":
   exec "nimble check_src; nimble check_tests; nimble test -c"
 

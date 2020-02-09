@@ -30,17 +30,15 @@ func testPaths: seq[string] =
 task docs, "Deploy doc html + search index to public/ directory":
   let
     deployDir = projectDir() & "/public/"
-    docOutBaseName = "index"
-    deployHtmlFile = deployDir & docOutBaseName & ".html"
     genDocCmd = "nim doc --out:$1 --index:on $2" % [deployDir, srcPaths()[0]]
-    #genDocCmd = "nim doc --index:on $2" % [deployHtmlFile, srcPaths()[0]]
     genTheIndexCmd = "nim buildIndex -o:$1/theindex.html $1" % [deployDir]
     deployJsFile = deployDir & "dochack.js"
     docHackJsSource = "https://nim-lang.github.io/Nim/dochack.js" # devel docs dochack.js
   mkDir deployDir
   exec genDocCmd
-  exec "ln -sf " & srcPaths()[0][4 .. ^4] & "html public/index.html"
   exec genTheIndexCmd
+  when defined Linux:
+    exec "ln -sf " & srcPaths()[0][4 .. ^4] & "html public/index.html"
   if not fileExists deployJsFile:
     withDir deployDir:
       exec "curl -LO " & docHackJsSource

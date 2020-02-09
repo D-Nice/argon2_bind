@@ -75,14 +75,20 @@ task install_deps, "Installs dependencies for supported systems":
     case distro.split('=', 1)[1]:
       of "alpine":
         exec "apk add --no-cache argon2-dev"
-        when defined(fuzz):
-          exec "apk add --no-cache afl"
       of "debian":
         exec "apt install -y libargon2-dev"
-        when defined(fuzz):
-          exec "apt install -y afl || echo AFL unavailable: fuzzing tasks unusuable"
       else:
         echo "Unknown Linux distro... install libargon2-dev or the appropriate argon2 development files for your distro manually!"
-task i, "Installs dependencies for some systems":
+  else:
+    echo "Unsupported OS"
+task install_fuzz, "Installs dependencies including those for fuzzing":
+  when defined(Linux):
+    const distro = staticExec("cat /etc/os-release | grep ^ID_LIKE= || cat /etc/os-release | grep ^ID=")
+    case distro.split('=', 1)[1]:
+      of "alpine":
+        exec "apk add --no-cache afl"
+      of "debian":
+        exec "apt install -y afl || echo AFL unavailable: fuzzing tasks unusuable"
+task i, "Installs dependencies for supported systems":
   exec "nimble install_deps"
 

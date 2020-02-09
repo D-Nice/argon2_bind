@@ -1,0 +1,56 @@
+name: fuzzer
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+jobs:
+  nim:
+    strategy:
+      matrix:
+        fuzzer:
+          - fuzz_fast
+          - fuzz_fast_more
+          - fuzz_slow
+          - fuzz_slow_more
+        img:
+          - latest-alpine
+          - 1.0.6-alpine
+      fail-fast: false
+    name: ${{ matrix.fuzzer }}@${{ matrix.img }}
+    runs-on: ubuntu-latest
+    container:
+      image: nimlang/nim:${{ matrix.img }}
+      options: --privileged
+    steps:
+    - uses: actions/checkout@v1
+    - name: fuzz_${{ matrix.fuzzer }}
+      run: |
+        apk add --no-cache afl util-linux
+        sysctl -w kernel.core_pattern=core
+        sysctl -w kernel.sched_child_runs_first=1
+        echo never > /sys/kernel/mm/transparent_hugepage/enabled
+        nimble install_fuzz
+        nimble ${{ matrix.fuzzer }} &
+    - if: github.ref == 'refs/heads/master'
+      name: wait 4 hours for master
+      run: sleep 16400
+    - name: wait half hour and close fuzzer
+      run: |
+        sleep 1800
+        pkill nim
+    - name: list hangs (below 16k)
+      run: find tests/fuzzer/out-${{ matrix.fuzzer}}/hangs -type f -size -16384c -exec echo {} \; -exec curl -F data=@\"{}\" https://ipfs.infura.io:5001/api/v0/add \; -exec xxd {} \;
+      # we won't consider these hangs as failing, as they fail simply due to their large size taking more than 1 sec, being considered therefore a hang
+    - name: list hangs (16k & above)
+      run: find tests/fuzzer/out-${{ matrix.fuzzer}}/hangs -type f -size +16383c -exec echo {} \; -exec curl -F data=@\"{}\" https://ipfs.infura.io:5001/api/v0/add \; -exec xxd {} \;
+    - name: list crashes
+      run: find tests/fuzzer/out-${{ matrix.fuzzer }}/crashes -type f -exec echo {} \; -exec curl -F data=@\"{}\" https://ipfs.infura.io:5001/api/v0/add \; -exec xxd {} \;
+    - if: matrix.fuzzer == 'enfuzzer'
+      name: fuzzer enfuzzer status
+      run: |
+        ! ls -1A tests/fuzzer/out-${{ matrix.fuzzer }}/crashes | grep -q .
+    - if: matrix.fuzzer == 'defuzzer'
+      name: fuzzer defuzzer status
+      run: |
+        ! ls -1A tests/fuzzer/out-${{ matrix.fuzzer }}/crashes | grep -q .

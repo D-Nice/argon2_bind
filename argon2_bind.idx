@@ -1,0 +1,20 @@
+Basic usage	argon2_bind.html#basic-usage	 Basic usage	
+Example	argon2_bind.html#basic-usage-example	  Example	
+Argon2Error	argon2_bind.html#Argon2Error	argon2_bind: Argon2Error	
+Argon2d	argon2_bind.html#Argon2d	Argon2Type.Argon2d	
+Argon2i	argon2_bind.html#Argon2i	Argon2Type.Argon2i	
+Argon2id	argon2_bind.html#Argon2id	Argon2Type.Argon2id	
+Argon2Type	argon2_bind.html#Argon2Type	argon2_bind: Argon2Type	
+Argon2Version10	argon2_bind.html#Argon2Version10	Argon2Version.Argon2Version10	
+Argon2Version13	argon2_bind.html#Argon2Version13	Argon2Version.Argon2Version13	
+Argon2Version	argon2_bind.html#Argon2Version	argon2_bind: Argon2Version	
+Argon2Params	argon2_bind.html#Argon2Params	argon2_bind: Argon2Params	
+Argon2Output	argon2_bind.html#Argon2Output	argon2_bind: Argon2Output	
+Argon2CurrentVersion	argon2_bind.html#Argon2CurrentVersion	argon2_bind: Argon2CurrentVersion	
+Argon2DefaultParams	argon2_bind.html#Argon2DefaultParams	argon2_bind: Argon2DefaultParams	
+setupArgon2Params	argon2_bind.html#setupArgon2Params,uint32,uint32,uint32,uint32,Argon2Type,Argon2Version	argon2_bind: setupArgon2Params(timeCost: uint32 = Argon2DefaultParams.timeCost;\n                  memoryCostK: uint32 = Argon2DefaultParams.memoryCostK;\n                  parallelism: uint32 = Argon2DefaultParams.parallelism;\n                  hashLen: uint32 = Argon2DefaultParams.hashLen;\n                  algoType: Argon2Type = Argon2DefaultParams.algoType;\n                  version: Argon2Version = Argon2DefaultParams.version): Argon2Params	
+getEncodedLen	argon2_bind.html#getEncodedLen,Argon2Params,	argon2_bind: getEncodedLen(argon2Params: Argon2Params; salt: seq[byte] | string): uint32	
+getOutput	argon2_bind.html#getOutput,,,Argon2Params	argon2_bind: getOutput(pass, salt: seq[byte] | string;\n          argon2Params: Argon2Params = Argon2DefaultParams): Argon2Output	
+getRawHash	argon2_bind.html#getRawHash,,,Argon2Params	argon2_bind: getRawHash(pass, salt: seq[byte] | string;\n           argon2Params: Argon2Params = Argon2DefaultParams): seq[byte]	
+getEncodedHash	argon2_bind.html#getEncodedHash,,,Argon2Params	argon2_bind: getEncodedHash(pass, salt: seq[byte] | string;\n               argon2Params: Argon2Params = Argon2DefaultParams): string	
+isVerified	argon2_bind.html#isVerified,string,	argon2_bind: isVerified(encoded: string; pass: seq[byte] | string): bool	

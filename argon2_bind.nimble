@@ -8,6 +8,15 @@ srcDir        = "src"
 # Dependencies
 requires "nim >= 1.0.0"
 
+when defined(nimdistros):
+  import distros
+  if detectOs(Ubuntu) or detectOs(Debian):
+    foreignDep "libargon2-dev"
+  elif detectOs(Alpine):
+    foreignDep "argon2-dev"
+  else:
+    foreignDep "libargon2"
+
 import
   sugar,
   sequtils,
@@ -75,14 +84,21 @@ task install_deps, "Installs dependencies for supported systems":
     case distro.split('=', 1)[1]:
       of "alpine":
         exec "apk add --no-cache argon2-dev"
-        when defined(fuzz):
-          exec "apk add --no-cache afl"
       of "debian":
         exec "apt install -y libargon2-dev"
-        when defined(fuzz):
-          exec "apt install -y afl || echo AFL unavailable: fuzzing tasks unusuable"
       else:
         echo "Unknown Linux distro... install libargon2-dev or the appropriate argon2 development files for your distro manually!"
-task i, "Installs dependencies for some systems":
+  else:
+    echo "Unsupported OS"
+task install_fuzz, "Installs dependencies including those for fuzzing":
+  when defined(Linux):
+    const distro = staticExec("cat /etc/os-release | grep ^ID_LIKE= || cat /etc/os-release | grep ^ID=")
+    case distro.split('=', 1)[1]:
+      of "alpine":
+        exec "apk add --no-cache afl"
+      of "debian":
+        exec "apt install -y afl || echo AFL unavailable: fuzzing tasks unusuable"
+  exec "nimble install_deps"
+task i, "Installs dependencies for supported systems":
   exec "nimble install_deps"
 

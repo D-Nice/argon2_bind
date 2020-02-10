@@ -6,6 +6,7 @@ Nim binding library to the Argon2 C implementation.
 
 * [Requirements](#requirements)
   * [Alpine Linux](#alpine-linux)
+  * [Supported Distros](#supported-distros)
 * [Docs](#docs)
 * [Notes](#notes)
 
@@ -25,6 +26,12 @@ to statically compile, get the development variant available for your OS
 
 or compile the C code and utilize libargon2.a yourself.
 
+### Supported Distros
+
+`nimble i`
+
+To install any package dependencies.
+
 ## Docs
 
 Available @ <https://d-nice.github.io/argon2_bind/>
@@ -40,6 +47,7 @@ and passing the appropriate parameters to your project:
 With `myproject.nim` referring to your own project importing this library,
 and you having to provide your own path to `libargon2.a` via the `-L` flag
 
-Tested on Linux only.
+Tested on Linux only, namely on the Alpine Linux docker image, use it
+for turnkey access to fuzzing etc...
 
 You will need at least 1 GiB of free memory to run the tests.

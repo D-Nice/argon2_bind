@@ -89,6 +89,7 @@ task install_fuzz, "Installs dependencies including those for fuzzing":
         exec "apk add --no-cache afl"
       of "debian":
         exec "apt install -y afl || echo AFL unavailable: fuzzing tasks unusuable"
+  exec "nimble install_deps"
 task i, "Installs dependencies for supported systems":
   exec "nimble install_deps"
 

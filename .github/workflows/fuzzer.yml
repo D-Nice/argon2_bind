@@ -11,10 +11,9 @@ jobs:
         fuzzer:
           - fuzz_fast
           - fuzz_fast_more
-          - fuzz_slow
-          - fuzz_slow_more
+          #- fuzz_slow
+          #- fuzz_slow_more
         img:
-          - latest-alpine
           - 1.0.6-alpine
       fail-fast: false
     name: ${{ matrix.fuzzer }}@${{ matrix.img }}
@@ -31,13 +30,15 @@ jobs:
         sysctl -w kernel.sched_child_runs_first=1
         echo never > /sys/kernel/mm/transparent_hugepage/enabled
         nimble install_fuzz
-        nimble ${{ matrix.fuzzer }} &
+        nimble ${{ matrix.fuzzer }} | tee out &
     - if: github.ref == 'refs/heads/master'
       name: wait 4 hours for master
       run: sleep 16400
     - name: wait half hour and close fuzzer
       run: |
-        sleep 1800
+        sleep 120
+        cat out
+        ls tests/fuzzer
         pkill nim
     - name: list hangs (below 16k)
       run: find tests/fuzzer/out-${{ matrix.fuzzer}}/hangs -type f -size -16384c -exec echo {} \; -exec curl -F data=@\"{}\" https://ipfs.infura.io:5001/api/v0/add \; -exec xxd {} \;
@@ -46,11 +47,6 @@ jobs:
       run: find tests/fuzzer/out-${{ matrix.fuzzer}}/hangs -type f -size +16383c -exec echo {} \; -exec curl -F data=@\"{}\" https://ipfs.infura.io:5001/api/v0/add \; -exec xxd {} \;
     - name: list crashes
       run: find tests/fuzzer/out-${{ matrix.fuzzer }}/crashes -type f -exec echo {} \; -exec curl -F data=@\"{}\" https://ipfs.infura.io:5001/api/v0/add \; -exec xxd {} \;
-    - if: matrix.fuzzer == 'enfuzzer'
-      name: fuzzer enfuzzer status
-      run: |
-        ! ls -1A tests/fuzzer/out-${{ matrix.fuzzer }}/crashes | grep -q .
-    - if: matrix.fuzzer == 'defuzzer'
-      name: fuzzer defuzzer status
+    - name: fuzzer status
       run: |
         ! ls -1A tests/fuzzer/out-${{ matrix.fuzzer }}/crashes | grep -q .

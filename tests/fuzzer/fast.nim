@@ -38,15 +38,7 @@ proc main(): void =
   discard pass.getOutput(
     salt,
     a2Params,
-#    setupArgon2Params(
-#      memoryCostK = 8,
-#      timeCost = 1,
-#      algoType = Argon2d,
 #    )
   )
 
 main()
-# pwd
-# salt
-# hashlen
-# algotype

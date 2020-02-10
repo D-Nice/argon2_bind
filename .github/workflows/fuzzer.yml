@@ -31,7 +31,7 @@ jobs:
         echo never > /sys/kernel/mm/transparent_hugepage/enabled
         nimble install_fuzz
         nimble ${{ matrix.fuzzer }} &
-    - if: github.ref == 'refs/heads/master'
+    - if: github.base_ref == 'refs/heads/master'
       name: wait 4 hours for master
       run: sleep 16400
     - name: wait half hour and close fuzzer

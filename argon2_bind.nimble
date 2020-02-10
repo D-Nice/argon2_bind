@@ -8,6 +8,15 @@ srcDir        = "src"
 # Dependencies
 requires "nim >= 1.0.0"
 
+when defined(nimdistros):
+  import distros
+  if detectOs(Ubuntu) or detectOs(Debian):
+    foreignDep "libargon2-dev"
+  elif detectOs(Alpine):
+    foreignDep "argon2-dev"
+  else:
+    foreignDep "libargon2"
+
 import
   sugar,
   sequtils,

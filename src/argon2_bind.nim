@@ -227,8 +227,8 @@ func argon2_encodedlen(
   saltLen: cuint,
   hashLen: cuint,
   algoType: Argon2Type
-): culong
-# TODO replace culong with csize_t in upcoming version...
+): uint
+# TODO replace uint with csize_t in upcoming version...
 
 # https://github.com/P-H-C/phc-winner-argon2/blob/62358ba2123abd17fccf2a108a301d4b52c01a7c/include/argon2.h#417
 func argon2_error_message(

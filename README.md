@@ -34,7 +34,7 @@ To install any package dependencies.
 
 ## Docs
 
-Available @ <https://d-nice.github.io/argon2_bind/>
+Available @ <https://d-nice.github.io/argon2_bind/argon2_bind.html>
 
 ## Notes
 

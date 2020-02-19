@@ -1,6 +1,6 @@
 # argon2_bind
 
-Nim binding library to the Argon2 C implementation.
+Nim binding library to the Argon2 [C implementation](https://github.com/P-H-C/phc-winner-argon2).
 
 <!-- vim-markdown-toc GFM -->
 

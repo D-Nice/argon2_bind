@@ -80,7 +80,7 @@ else:
       result.add quote do:
         {.compile: argon2BaseDir / "src" / `file` .}
 
-  {.passC: "-I" & argon2BaseDir / "include".}
+  {.passc: "-I" & argon2BaseDir / "include".}
   compileArgon2Lib()
   {.pragma: cffi, header: "argon2.h", importc.}
 

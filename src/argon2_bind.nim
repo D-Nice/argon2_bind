@@ -46,13 +46,45 @@
 ##  # @[163, 22, 29, 233, 157, 14, 124, 7, 98, 54, 75, 44, 75, 62, 162, 185,
 ##  # 80, 0, 89, 115, 248, 135, 157, 84, 40, 127, 216, 189, 86, 146, 31, 54]
 ##
-when defined(Windows):
-  const libargon2 = "libargon2.dll"
+import
+  os
+
+when defined(dynLink):
+  ## Allow users to define whether to dynamically link to
+  ## argon2 if their system has it available or by default
+  ## compile and statically link it. The latter is now the
+  ## default for generally better cross-platform support.
+  import strutils
+  const libargon2 = DynlibFormat % "argon2" & "(|.1)"
+  {.pragma: cffi, dynLib: libargon2, importc.}
 else:
-  const libargon2 = "libargon2.so(|.1)"
+  const argon2BaseDir = currentSourcePath.parentDir /
+    "argon2_bind" /
+    "argon2"
+
+  import macros
+  macro compileArgon2Lib =
+    ## simply allows us to track needed files
+    ## for compilation in this array rather than
+    ## declaring multiple compile pragmas manually
+    const files = [
+      "argon2.c",
+      "blake2" / "blake2b.c",
+      "core.c",
+      "encoding.c",
+      "ref.c",
+      "thread.c",
+    ]
+    result = newStmtList()
+    for file in files:
+      result.add quote do:
+        {.compile: argon2BaseDir / "src" / `file` .}
+
+  {.passC: "-I" & argon2BaseDir / "include".}
+  compileArgon2Lib()
+  {.pragma: cffi, header: "argon2.h", importc.}
 
 # EXPORTED TYPES
-
 type
   Argon2Error* = object of CatchableError
     ## Catchable error arising from argon2_bind module.
@@ -86,7 +118,6 @@ type
     ## * `Argon2CurrentVersion <#Argon2CurrentVersion>`_
     Argon2Version10 = 0x10,
     Argon2Version13 = 0x13,
-
 
 type
   Argon2Params* {.bycopy.} = object
@@ -214,10 +245,9 @@ func setupArgon2Params*(
 
 # C FFI
 # https://github.com/P-H-C/phc-winner-argon2/blob/master/include/argon2.h
-{.push
-  dynLib: libargon2
-  importc
-.}
+
+# Unfortunately can't push aliased pragma
+# track here https://github.com/nim-lang/Nim/issues/12867#issuecomment-588002211
 
 # https://github.com/P-H-C/phc-winner-argon2/blob/62358ba2123abd17fccf2a108a301d4b52c01a7c/src/argon2.c#L447
 func argon2_encodedlen(
@@ -227,13 +257,13 @@ func argon2_encodedlen(
   saltLen: cuint,
   hashLen: cuint,
   algoType: Argon2Type
-): uint
+): uint {.cffi.}
 # TODO replace uint with csize_t in upcoming version...
 
 # https://github.com/P-H-C/phc-winner-argon2/blob/62358ba2123abd17fccf2a108a301d4b52c01a7c/include/argon2.h#417
 func argon2_error_message(
   returnCode: ReturnCode
-): cstring
+): cstring {.cffi.}
 
 # https://github.com/P-H-C/phc-winner-argon2/blob/62358ba2123abd17fccf2a108a301d4b52c01a7c/include/argon2.h#347
 func argon2_verify(
@@ -241,7 +271,7 @@ func argon2_verify(
   pwd: pointer,
   pwdLen: culong,
   algoType: Argon2Type,
-): ReturnCode
+): ReturnCode {.cffi.}
 
 # https://github.com/P-H-C/phc-winner-argon2/blob/62358ba2123abd17fccf2a108a301d4b52c01a7c/src/argon2.c#L100
 proc argon2_hash(
@@ -258,9 +288,7 @@ proc argon2_hash(
   encodedLen: culong,
   algoType: Argon2Type,
   version: cuint
-): ReturnCode
-
-{.pop.} ## pops dynlib and importc
+): ReturnCode {.cffi.}
 
 {.push
   inline
@@ -593,4 +621,3 @@ func isVerified*(
 
 {.pop.} ## pops raise pragma
 {.pop.} ## pops inline pragma
-

@@ -1,0 +1,8 @@
+{
+  "bumpFiles": [
+    {
+      "filename": "src/argon2_bind/.v.semver",
+      "type": "plain-text"
+    }
+  ]
+}

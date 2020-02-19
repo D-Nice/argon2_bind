@@ -1,32 +1,31 @@
 # argon2_bind
 
-Nim binding library to the Argon2 C implementation.
+Nim binding library to the Argon2 [C implementation](https://github.com/P-H-C/phc-winner-argon2).
 
 <!-- vim-markdown-toc GFM -->
 
-* [Requirements](#requirements)
-  * [Alpine Linux](#alpine-linux)
-  * [Supported Distros](#supported-distros)
+* [Dependencies](#dependencies)
+  * [Static Linking](#static-linking)
+  * [Dynamic Linking](#dynamic-linking)
+    * [Supported Distros](#supported-distros)
 * [Docs](#docs)
 * [Notes](#notes)
+  * [Multithreading](#multithreading)
 
 <!-- vim-markdown-toc -->
 
-## Requirements
+## Dependencies
+
+### Static Linking
+
+* None (this is the default and should yield best cross-platform results)
+
+### Dynamic Linking
 
 * libargon2
+* pass `-d:dynlink` flag when compiling
 
-### Alpine Linux
-
-`apk add --no-cache argon2-libs`
-
-to statically compile, get the development variant available for your OS
-
-`apk add --no-cache argon2-dev`
-
-or compile the C code and utilize libargon2.a yourself.
-
-### Supported Distros
+#### Supported Distros
 
 `nimble i`
 
@@ -38,16 +37,11 @@ Available @ <https://d-nice.github.io/argon2_bind/argon2_bind.html>
 
 ## Notes
 
-This library by default dynamically links to libargon2 on your system.
-You can still statically link by having the development libargon2 variant
-and passing the appropriate parameters to your project:
-
-`nim c --dynlibOverride:libargon2 -L:/usr/lib/libargon2.a myproject.nim`
-
-With `myproject.nim` referring to your own project importing this library,
-and you having to provide your own path to `libargon2.a` via the `-L` flag
-
-Tested on Linux only, namely on the Alpine Linux docker image, use it
-for turnkey access to fuzzing etc...
-
 You will need at least 1 GiB of free memory to run the tests.
+
+### Multithreading
+
+The argon2 execution will be multithreaded in all instances, except if
+using `--dynlibOverride:libargon2 -d:dynlink`. It doesn't make much sense
+to pass these parameters though, with the static linking being built-in as
+the default.

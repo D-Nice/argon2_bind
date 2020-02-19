@@ -8,15 +8,6 @@ srcDir        = "src"
 # Dependencies
 requires "nim >= 1.0.0"
 
-when defined(nimdistros):
-  import distros
-  if detectOs(Ubuntu) or detectOs(Debian):
-    foreignDep "libargon2-dev"
-  elif detectOs(Alpine):
-    foreignDep "argon2-dev"
-  else:
-    foreignDep "libargon2"
-
 import
   sugar,
   sequtils,
@@ -86,9 +77,9 @@ task install_deps, "Installs dependencies for supported systems":
     const distro = staticExec("cat /etc/os-release | grep ^ID_LIKE= || cat /etc/os-release | grep ^ID=")
     case distro.split('=', 1)[1]:
       of "alpine":
-        exec "apk add --no-cache argon2-dev"
+        exec "apk add --no-cache argon2-dev rsync"
       of "debian":
-        exec "apt install -y libargon2-dev"
+        exec "apt install -y libargon2-dev rsync"
       else:
         echo "Unknown Linux distro... install libargon2-dev or the appropriate argon2 development files for your distro manually!"
   else:
@@ -104,4 +95,12 @@ task install_fuzz, "Installs dependencies including those for fuzzing":
   exec "nimble install_deps"
 task i, "Installs dependencies for supported systems":
   exec "nimble install_deps"
+
+task update_argon2, "Pulls the latest argon2 submodule and copies the necessary files for static compilation":
+  exec "git submodule update --recursive --remote"
+  const
+    cmd = "rsync -a --delete .github/phc-winner-argon2/"
+    dest = " src/argon2_bind/argon2/"
+  exec cmd & "include" & dest
+  exec cmd & "src"  & dest
 

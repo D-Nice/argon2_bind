@@ -3,9 +3,9 @@ import
 from os import `/`
 
 when "src".dirExists:
-  const versionFilePath = "src" / "argon2_bind" / ".version"
+  const versionFilePath = "src" / "argon2_bind" / ".v.semver"
 else:
-  const versionFilePath = "argon2_bind" / ".version"
+  const versionFilePath = "argon2_bind" / ".v.semver"
 
 # Package
 version       = versionFilePath.staticRead.splitLines[0]
@@ -13,7 +13,7 @@ author        = "D-Nice"
 description   = "Bindings for the reference Argon2 C lib"
 license       = "Apache-2.0"
 srcDir        = "src"
-installFiles  = @["argon2_bind" / ".version"]
+installExt  = @["nim", "c", "h", "semver"]
 
 # Dependencies
 requires "nim >= 1.0.0"

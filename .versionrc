@@ -1,7 +1,7 @@
 {
-  "bumpFiles": [
+  "packageFiles": [
     {
-      "filename": "src/argon2_bind/.v.semver",
+      "filename": "src/version.txt",
       "type": "plain-text"
     }
   ]

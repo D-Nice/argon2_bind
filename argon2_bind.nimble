@@ -8,11 +8,12 @@ else:
   const versionFilePath = "argon2_bind" / ".version"
 
 # Package
-version       = versionFilePath.staticRead.splitLines(false)[0]
+version       = versionFilePath.staticRead.splitLines[0]
 author        = "D-Nice"
 description   = "Bindings for the reference Argon2 C lib"
 license       = "Apache-2.0"
 srcDir        = "src"
+installFiles  = @["argon2_bind" / ".version"]
 
 # Dependencies
 requires "nim >= 1.0.0"

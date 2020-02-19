@@ -1,5 +1,6 @@
+import strutils
 # Package
-version       = "0.1.0"
+version       = staticRead(".version").splitLines(false)[0]
 author        = "D-Nice"
 description   = "Bindings for the reference Argon2 C lib"
 license       = "Apache-2.0"

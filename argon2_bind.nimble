@@ -1,8 +1,14 @@
 import
   strutils
 from os import `/`
+
+when "src".dirExists:
+  const versionFilePath = "src" / "argon2_bind" / ".version"
+else:
+  const versionFilePath = "argon2_bind" / ".version"
+
 # Package
-version       = staticRead("src" / ".version").splitLines(false)[0]
+version       = versionFilePath.staticRead.splitLines(false)[0]
 author        = "D-Nice"
 description   = "Bindings for the reference Argon2 C lib"
 license       = "Apache-2.0"

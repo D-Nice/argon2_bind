@@ -22,7 +22,7 @@ jobs:
     - name: build
       run: |
         export PATH=~/.nimble/bin:$PATH
-        nim c -r -d:mingw --threads:on src/argon2_bind.nim
+        nim c -d:mingw --threads:on src/argon2_bind.nim
   build-dynamic:
     runs-on: ubuntu-latest
     steps:
@@ -37,4 +37,4 @@ jobs:
     - name: build
       run: |
         export PATH=~/.nimble/bin:$PATH
-        nim c -r -d:mingw -d:dynlink src/argon2_bind.nim
+        nim c -d:mingw -d:dynlink src/argon2_bind.nim

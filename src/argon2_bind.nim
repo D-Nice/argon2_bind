@@ -58,6 +58,12 @@ when defined(dynLink):
   const libargon2 = DynlibFormat % "argon2" & "(|.1)"
   {.pragma: cffi, dynLib: libargon2, importc.}
 else:
+  when defined mingw:
+    # mingw cross-compile workaround
+    import strutils
+    proc `/`(h, t: string): string =
+      h.joinPath(t).replace("\\", $AltSep)
+
   const argon2BaseDir = currentSourcePath.parentDir /
     "argon2_bind" /
     "argon2"

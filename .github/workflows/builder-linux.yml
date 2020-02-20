@@ -1,0 +1,36 @@
+name: builder-linux
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - chore/ci/builder
+  pull_request:
+    branches:
+      - master
+      - develop
+jobs:
+  build-static:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: get nim
+      run: |
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    - name: build
+      run: |
+        export PATH=~/.nimble/bin:$PATH
+        nim c -r --threads:on src/argon2_bind.nim
+  build-dynamic:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: get nim
+      run: |
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    - name: get libargon2
+      run: sudo apt-get update && sudo apt-get install -y libargon2-0
+    - name: build
+      run: |
+        export PATH=~/.nimble/bin:$PATH
+        nim c -r -d:dynlink src/argon2_bind.nim

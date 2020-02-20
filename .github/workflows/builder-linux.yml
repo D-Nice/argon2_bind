@@ -14,8 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: |
-        apt-get update && apt-get install -y curl gcc openssl
+    - name: get nim
+      run: |
         curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    - name: build
+      run: |
         export PATH=~/.nimble/bin:$PATH
         nim c -r --threads:on src/argon2_bind.nim
+  build-dynamic:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: get nim
+      run: |
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    - name: get libargon2
+      run: sudo apt update && sudo apt install libargon2-dev
+    - name: build
+      run: |
+        export PATH=~/.nimble/bin:$PATH
+        nim c -r -d:dynlink src/argon2_bind.nim

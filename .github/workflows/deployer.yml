@@ -3,7 +3,6 @@ on:
   push:
     branches:
     - master
-    - "**"
 jobs:
   deploy:
     name: gh-pages
@@ -20,5 +19,5 @@ jobs:
     - uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.DNICE_BOT_TOKEN }}
-        BRANCH: gh-pages-test
+        BRANCH: gh-pages
         FOLDER: public

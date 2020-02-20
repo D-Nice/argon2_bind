@@ -1,0 +1,17 @@
+name: examples
+on:
+  push:
+    branches:
+      - '**'
+      - '!master'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: nimlang/nim:latest-alpine
+    steps:
+    - uses: actions/checkout@v1
+    - name: assert runnable examples
+      run: |
+        nimble i
+        nimble docs

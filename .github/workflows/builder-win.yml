@@ -1,0 +1,40 @@
+name: builder-win
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - chore/ci/builder
+  pull_request:
+    branches:
+      - master
+      - develop
+jobs:
+  build-static:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: get nim
+      run: |
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    - name: get mingw-w64
+      run: sudo apt-get update && sudo apt-get install -y mingw-w64
+    - name: build
+      run: |
+        export PATH=~/.nimble/bin:$PATH
+        nim c -d:mingw --threads:on src/argon2_bind.nim
+  build-dynamic:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: get nim
+      run: |
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    - name: get mingw-w64
+      run: sudo apt-get update && sudo apt-get install -y mingw-w64
+    - name: get libargon2
+      run: sudo apt-get update && sudo apt-get install -y libargon2-0
+    - name: build
+      run: |
+        export PATH=~/.nimble/bin:$PATH
+        nim c -d:mingw -d:dynlink src/argon2_bind.nim

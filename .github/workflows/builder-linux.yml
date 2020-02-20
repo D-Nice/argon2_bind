@@ -1,0 +1,21 @@
+name: builder-linux
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - chore/ci/builder
+  pull_request:
+    branches:
+      - master
+      - develop
+jobs:
+  build-static:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: |
+        apt-get update && apt-get install -y curl gcc openssl
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+        export PATH=~/.nimble/bin:$PATH
+        nim c -r --threads:on src/argon2_bind.nim

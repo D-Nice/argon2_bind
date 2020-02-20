@@ -3,21 +3,22 @@ on:
   push:
     branches:
     - master
+    - "**"
 jobs:
   deploy:
     name: gh-pages
     runs-on: ubuntu-latest
     container:
-      image: nimlang/nim:latest
+      image: nimlang/nim:latest-alpine
     steps:
     - uses: actions/checkout@v1
     - name: Build docs
       run: |
-        apt-get update && apt-get install -y rsync curl
+        apk add --no-cache rsync curl
         nimble i
         nimble docs
     - uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.DNICE_BOT_TOKEN }}
-        BRANCH: gh-pages
+        BRANCH: gh-pages-test
         FOLDER: public

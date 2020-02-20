@@ -29,7 +29,7 @@ jobs:
       run: |
         curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
     - name: get libargon2
-      run: sudo apt update && sudo apt install libargon2-dev
+      run: sudo apt-get update && sudo apt-get install -y libargon2-0
     - name: build
       run: |
         export PATH=~/.nimble/bin:$PATH

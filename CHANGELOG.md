@@ -1,5 +1,12 @@
 # CHANGELOG
 
+### [0.1.1](https://github.com/D-Nice/argon2_bind/compare/v0.1.0...v0.1.1) (2020-02-25)
+
+
+### Bug Fixes
+
+* **nimble:** dyna versioning bug when dep ([781d9aa](https://github.com/D-Nice/argon2_bind/commit/781d9aae7239b8418e4ee20abd032826f258bff9))
+
 ## 0.1.0
  (2020-02-20)
 
